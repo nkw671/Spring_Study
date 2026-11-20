@@ -1,5 +1,8 @@
 package com.study.demo;
 
+import org.springframework.stereotype.Component;
+
+@Component("kr")
 public class KRGreeter implements Greeter{
 
     @Override
