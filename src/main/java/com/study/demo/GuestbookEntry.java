@@ -16,4 +16,8 @@ public abstract class GuestbookEntry {
     public String getName() {
         return name;
     }
+
+    public String readMessage(String passwordIn){
+        return message;
+    }
 }

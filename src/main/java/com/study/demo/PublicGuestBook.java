@@ -7,8 +7,4 @@ public class PublicGuestBook extends GuestbookEntry{
     public PublicGuestBook(String name, String message) {
         super(name, message);
     }
-    @Override
-    public String getMessage() {
-        return super.getMessage();
-    }
 }
