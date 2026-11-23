@@ -12,7 +12,7 @@ public class GuestbookController {
 
 
     @PostMapping("/guestbook")
-    public List<GuestbookEntry> addGuestBook(@RequestBody GuestbookStruct guestBook) {
+    public ApiResponse<List<GuestbookEntry>> addGuestBook(@RequestBody GuestbookStruct guestBook) {
         GuestbookEntry newGuestBook;
 
         if (guestBook.secret()){
@@ -22,23 +22,23 @@ public class GuestbookController {
             newGuestBook = new PublicGuestBook(guestBook.name(), guestBook.message());
         }
         guestBookList.add(newGuestBook);
-        return guestBookList;
+        return ApiResponse.okay(guestBookList);
     }
 
     @GetMapping("/guestbook")
-    public List<GuestbookEntry> showGuestBook(){
-        return guestBookList;
+    public ApiResponse<List<GuestbookEntry>> showGuestBook(){
+        return ApiResponse.okay(guestBookList);
     }
 
     @GetMapping("/guestbook/{id}")
-    public FindResult findGuestBook(@PathVariable int id, @RequestParam(required = false) String password){
+    public ApiResponse<FindResult> findGuestBook(@PathVariable int id, @RequestParam(required = false) String password){
         if(guestBookList.size() - 1 < id | id < 0){
             throw new GuestBookNotFoundException("해당 방명록을 찾을 수 없습니다.");
         }
         GuestbookEntry entry;
         entry = guestBookList.get(id);
-
-        return new FindResult(entry.getName(), entry.readMessage(password));
+        FindResult result = new FindResult(entry.getName(), entry.readMessage(password));
+        return ApiResponse.okay(result);
     }
 
 
