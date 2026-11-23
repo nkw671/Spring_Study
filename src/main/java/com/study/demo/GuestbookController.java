@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class GuestbookController {
@@ -26,8 +29,14 @@ public class GuestbookController {
     }
 
     @GetMapping("/guestbook")
-    public ApiResponse<List<GuestbookEntry>> showGuestBook(){
-        return ApiResponse.okay(guestBookList);
+    public ApiResponse<List<GuestbookEntry>> showGuestBook(@RequestParam(required = false) String author){
+        if(author == null){
+            return ApiResponse.okay(guestBookList);
+        }
+
+        Stream<GuestbookEntry> stream = guestBookList.stream().filter( oneBook -> author.equals(oneBook.getName())); //todo: 없는 사람을 검색했을때 예외처리
+         List<GuestbookEntry> filteredList = stream.toList();
+        return ApiResponse.okay(filteredList);
     }
 
     @GetMapping("/guestbook/{id}")
@@ -40,6 +49,16 @@ public class GuestbookController {
         FindResult result = new FindResult(entry.getName(), entry.readMessage(password));
         return ApiResponse.okay(result);
     }
+    @GetMapping("/guestbook/authors")
+    public ApiResponse<List<String>> showAuthors(){
+        List<String> result = guestBookList.stream().map(GuestbookEntry::getName).distinct().sorted().toList();
+        return ApiResponse.okay(result);
+    }
 
+    @GetMapping("/guestbook/stats")
+    public ApiResponse<Map<String, Long>> showAuthorStats(){
+        Map<String, Long> authorStat = guestBookList.stream().collect(Collectors.groupingBy(GuestbookEntry::getName, Collectors.counting()));
+        return ApiResponse.okay(authorStat);
+    }
 
 }
